@@ -2,7 +2,7 @@ stages:
   - "pre_check"
   - "deploy"
 
-nginx_config_check:
+galera_config_check:
   stage: pre_check
   rules:
   - changes:
@@ -17,7 +17,7 @@ nginx_config_check:
   after_script:
     - rm .vault_password.txt
 
-nginx_config_deploy:
+galera_config_deploy:
   stage: deploy
   rules:
   - changes:
