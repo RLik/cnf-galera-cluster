@@ -3,13 +3,12 @@
   become: true
 
   vars_files:
-    - /etc/ansible/vault/nginx.yml
+    - /etc/ansible/vault/galera.yml
   
   roles:
     - initial_setup
     - firewall_config
     - security_config
-    - nginx
     - zabbix_agent
 
   pre_tasks:
