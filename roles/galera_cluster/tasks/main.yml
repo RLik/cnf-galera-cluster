@@ -1,0 +1,22 @@
+---
+- name: Install MariaDB Server
+  package:
+    name:
+    - mariadb-server
+
+# mysql_secure_installation
+- name: Update MariaDB root password
+  mysql_user: name=root host=127.0.0.1 password={{mysql_root_password}}
+
+# mysql_secure_installation
+- name: Delete anonymous MySQL user
+  mysql_user: name="" host=127.0.0.1 state=absent
+
+
+# mysql_secure_installation
+- name: Delete Hostname based MySQL user
+  mysql_user: name=root host="{{ansible_nodename}}" state=absent
+
+# mysql_secure_installation
+- name: Remove MySQL test database
+  mysql_db: name=test state=absent

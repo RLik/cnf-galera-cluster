@@ -1,0 +1,2 @@
+---
+mysql_root_password: "{{ lookup('env', 'ANSIBLe_MYSQL_ROOT_PWD') }}"
