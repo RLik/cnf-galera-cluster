@@ -1,22 +1,57 @@
 ---
-- name: Install MariaDB Server
+- name: Install MariaDB Server and required software
   package:
     name:
     - mariadb-server
+    - python3-pip
+
+- name: Install pymysql
+  pip:
+    name: "{{ item }}"
+    executable: pip
+    state: present
+  with_items:
+    - PyMySQL
 
 # mysql_secure_installation
 - name: Update MariaDB root password
-  mysql_user: name=root host=127.0.0.1 password={{mysql_root_password}}
+  community.mysql.mysql_user:
+    login_unix_socket: "{{ mysql_socket }}"
+    name: root
+    password: "{{ mysql_root_password }}"
+  register: update_root_password
+  ignore_errors: yes
 
 # mysql_secure_installation
-- name: Delete anonymous MySQL user
-  mysql_user: name="" host=127.0.0.1 state=absent
+- name: Update MariaDB root password
+  community.mysql.mysql_user:
+    login_unix_socket: "{{ mysql_socket }}"
+    login_password: "{{ mysql_root_password }}"
+    name: root
+    password: "{{ mysql_root_password }}"
+  when: update_root_password.failed == true
 
+# mysql_secure_installation
+- name: Removes anonymous user account for localhost
+  community.mysql.mysql_user:
+    login_unix_socket: "{{ mysql_socket }}"
+    login_password: "{{ mysql_root_password }}"
+    name: ''
+    state: absent
 
 # mysql_secure_installation
 - name: Delete Hostname based MySQL user
-  mysql_user: name=root host="{{ansible_nodename}}" state=absent
+  community.mysql.mysql_user:
+    login_unix_socket: "{{ mysql_socket }}"
+    login_password: "{{ mysql_root_password }}"
+    name: root
+    host: "{{ ansible_nodename }}"
+    state: absent
 
 # mysql_secure_installation
 - name: Remove MySQL test database
-  mysql_db: name=test state=absent
+  community.mysql.mysql_db:
+    login_unix_socket: "{{ mysql_socket }}"
+    login_password: "{{ mysql_root_password }}"
+    name: test
+    state: absent
