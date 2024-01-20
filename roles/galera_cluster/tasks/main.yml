@@ -55,3 +55,36 @@
     login_password: "{{ mysql_root_password }}"
     name: test
     state: absent
+
+- name: Allow cluster to start
+  lineinfile:
+    line: "safe_to_bootstrap: 1"
+    path: /var/lib/mysql/grastate.dat
+    regex: '^safe_to_bootstrap'
+  when: inventory_hostname in groups["cluster_primary_node"]
+
+- name: Copy mariadb server config file
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    force: true
+  with_items:
+  - { src: 50-server.cnf.j2, dest: /etc/mysql/mariadb.conf.d/50-server.cnf }
+
+- name: Copy mariadb server config file to primary node
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    force: true
+  with_items:
+  - { src: 60-galera.cnf.j2, dest: /etc/mysql/mariadb.conf.d/60-galera.cnf }
+  
+- name: Start Galera cluster
+  shell: galera_new_cluster
+  when: inventory_hostname in groups["cluster_primary_node"]
+
+- name: Restart MariaDB server on additional cluster node
+  service:
+    name: mariadb
+    state: restarted
+  when: inventory_hostname in groups["cluster_additional_node"]
