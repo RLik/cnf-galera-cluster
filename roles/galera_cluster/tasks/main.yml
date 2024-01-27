@@ -56,13 +56,6 @@
     name: test
     state: absent
 
-- name: Allow cluster to start
-  lineinfile:
-    line: "safe_to_bootstrap: 1"
-    path: /var/lib/mysql/grastate.dat
-    regex: '^safe_to_bootstrap'
-  when: inventory_hostname in groups["cluster_primary_node"]
-
 - name: Copy mariadb server config file
   template:
     src: "{{ item.src }}"
