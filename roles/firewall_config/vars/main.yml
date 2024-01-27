@@ -13,3 +13,4 @@ allowed_tcp_ports:
 # List of allowed UDP ports
 allowed_udp_ports:
   - 161
+  - 4567
