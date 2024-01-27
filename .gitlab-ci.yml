@@ -4,6 +4,9 @@ stages:
 
 galera_config_check:
   stage: pre_check
+  only:
+  - web
+  - push
   rules:
   - changes:
     - "*.md"
@@ -19,6 +22,9 @@ galera_config_check:
 
 galera_config_deploy:
   stage: deploy
+  only:
+  - web
+  - push
   rules:
   - changes:
     - "*.md"
