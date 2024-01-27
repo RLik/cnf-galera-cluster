@@ -4,15 +4,14 @@ stages:
 
 galera_config_check:
   stage: pre_check
-  only:
-  - web
-  - push
   rules:
   - changes:
     - "*.md"
     when: never
-  - if: '$CI_COMMIT_REF_NAME == "main"'
+  - if: ('$CI_COMMIT_REF_NAME == "main"') && (($CI_PIPELINE_SOURCE == "push" || $CI_PIPELINE_SOURCE == "web"))
     when: always
+  - if: $CI_PIPELINE_SOURCE == "push"
+  - if: $CI_PIPELINE_SOURCE == "web"
   script:
     - echo $ANSIBLE_VAULT_PASSWORD > .vault_password.txt
     - chmod 400 .vault_password.txt
@@ -22,14 +21,11 @@ galera_config_check:
 
 galera_config_deploy:
   stage: deploy
-  only:
-  - web
-  - push
   rules:
   - changes:
     - "*.md"
     when: never
-  - if: '$CI_COMMIT_REF_NAME == "main"'
+  - if: ('$CI_COMMIT_REF_NAME == "main"') && (($CI_PIPELINE_SOURCE == "push" || $CI_PIPELINE_SOURCE == "web"))
     when: always
   script:
     - echo $ANSIBLE_VAULT_PASSWORD > .vault_password.txt
