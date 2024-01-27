@@ -63,13 +63,6 @@
     force: true
   with_items:
   - { src: 50-server.cnf.j2, dest: /etc/mysql/mariadb.conf.d/50-server.cnf }
-
-- name: Copy mariadb server config file to primary node
-  template:
-    src: "{{ item.src }}"
-    dest: "{{ item.dest }}"
-    force: true
-  with_items:
   - { src: 60-galera.cnf.j2, dest: /etc/mysql/mariadb.conf.d/60-galera.cnf }
   
 - name: Start Galera cluster
